@@ -1,0 +1,15 @@
+# Video Feature Extraction Tool - Dependencies
+# Run: pip install -r requirements.txt
+
+# Core dependencies (required)
+opencv-python>=4.8.0    # Video processing and optical flow
+numpy>=1.24.0           # Number crunching
+Pillow>=10.0.0          # Image handling
+
+# Text detection (requires Tesseract installed separately)
+pytesseract>=0.3.10
+
+# Object detection (optional - skip with --skip-yolo flag). I didn't test this because my PC wasn't downloading the Pytorch properly.
+# Note: Also needs PyTorch. Install with:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+ultralytics>=8.0.0
