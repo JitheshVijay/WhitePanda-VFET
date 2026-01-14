@@ -7,7 +7,7 @@ A Python-based video analysis tool that extracts visual and temporal features fr
 This tool analyzes your video and extracts four key features:
 
 ### 1. Shot Cut Detection
-Finds "hard cuts" — those abrupt transitions between scenes. Great for understanding the editing pace of trailers, music videos, or any fast-paced content. Uses histogram comparison to detect when the visual content changes dramatically.
+Finds "hard cuts" those abrupt transitions between scenes. Great for understanding the editing pace of trailers, music videos, or any fast-paced content. Uses histogram comparison to detect when the visual content changes dramatically.
 
 ### 2. Motion Analysis
 Measures how much movement is happening in your video using Optical Flow. Returns an intensity rating (low/medium/high) so you can quickly tell if it's a calm interview or an action-packed sequence.
