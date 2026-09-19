@@ -292,6 +292,7 @@ class VideoFeatureExtractor:
         frames_analyzed = 0
         detected_texts = []
         frame_idx = 0
+        ocr_errors = 0
         
         while True:
             ret, frame = self.cap.read()
@@ -327,9 +328,20 @@ class VideoFeatureExtractor:
                     for word in words[:5]:  # Limit words per frame
                         if word.isalnum() and word not in detected_texts:
                             detected_texts.append(word)
-            except Exception as e:
-                # Timeout or other OCR error - skip this frame
-                pass
+            except pytesseract.TesseractNotFoundError:
+                # The pytesseract package is installed but the Tesseract binary
+                # is not. Every frame would fail identically, so stop and say so
+                # rather than reporting a confident 0% text ratio.
+                return {
+                    "error": "Tesseract binary not found - install it separately "
+                             "(macOS: brew install tesseract, Linux: apt install "
+                             "tesseract-ocr, Windows: see the Tesseract installer)",
+                    "text_present_ratio": None
+                }
+            except Exception:
+                # Timeout or other per-frame OCR error - skip this frame, but
+                # keep count so a wholly failed pass is not read as "no text".
+                ocr_errors += 1
             
             # Limit total analysis for performance
             if frames_analyzed >= 100:
@@ -337,12 +349,15 @@ class VideoFeatureExtractor:
         
         text_ratio = frames_with_text / frames_analyzed if frames_analyzed > 0 else 0
         
-        return {
+        result = {
             "text_present_ratio": round(text_ratio, 3),
             "frames_with_text": frames_with_text,
             "frames_analyzed": frames_analyzed,
             "sample_keywords": detected_texts[:15]  # Limit keywords in output
         }
+        if ocr_errors:
+            result["frames_failed"] = ocr_errors
+        return result
     
     def detect_objects(self, sample_interval: int = 30) -> Dict[str, Any]:
         """
